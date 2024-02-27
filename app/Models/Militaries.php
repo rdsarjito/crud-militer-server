@@ -11,7 +11,7 @@ class Militaries extends Model
 
     protected $table = 'militaries';
 
-    protected $filllable = [
+    protected $fillable = [
         'nama',
         'jenis',
         'type',
