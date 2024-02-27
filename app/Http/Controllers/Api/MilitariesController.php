@@ -50,8 +50,9 @@ class MilitariesController extends Controller
                 'kondisi' => $request->kondisi,
                 'tahun_produksi' => $request->tahun_produksi,
                 'tanggal_perolehan' => $request->tanggal_perolehan,
-                'matra' => $request->matra,
                 'gambar' => $request->gambar,
+                'matra' => $request->matra,
+                
             ]);
         }
 
@@ -91,8 +92,9 @@ class MilitariesController extends Controller
             'kondisi' => 'required|max:191',
             'tahun_produksi' => 'required|date',
             'tanggal_perolehan' => 'required|date',
-            'matra' => 'required|max:191',
             'gambar' => 'required|max:191',
+            'matra' => 'required|max:191',
+            
         ]);
 
         if($validator->fails()) {
