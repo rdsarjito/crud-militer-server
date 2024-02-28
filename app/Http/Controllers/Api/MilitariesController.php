@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Militaries;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class MilitariesController extends Controller
@@ -33,7 +35,7 @@ class MilitariesController extends Controller
             'tahun_produksi' => 'required|date',
             'tanggal_perolehan' => 'required|date',
             'matra' => 'required|max:191',
-            'gambar' => 'required|max:191',
+            'gambar' => 'required|file|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
 
@@ -43,6 +45,7 @@ class MilitariesController extends Controller
                 'errors' => $validator->messages()
             ], 422);
         }else{
+            $imageName = Str::random(32).".".$request->gambar->getClientOriginalExtension();     
             $militaries = Militaries::create([
                 'nama' => $request->nama,
                 'jenis' => $request->jenis,
@@ -50,10 +53,10 @@ class MilitariesController extends Controller
                 'kondisi' => $request->kondisi,
                 'tahun_produksi' => $request->tahun_produksi,
                 'tanggal_perolehan' => $request->tanggal_perolehan,
-                'gambar' => $request->gambar,
                 'matra' => $request->matra,
-                
+                'gambar' => $imageName,
             ]);
+            Storage::disk('public')->put($imageName, file_get_contents($request->gambar));
         }
 
         if($militaries) {
