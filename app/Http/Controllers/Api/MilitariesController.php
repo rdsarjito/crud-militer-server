@@ -88,48 +88,40 @@ class MilitariesController extends Controller
     }
 
     public function update(Request $request, $id) {
-        $validator = Validator::make($request->all(), [
-            'nama' => 'required|max:191',
-            'jenis' => 'required|max:191',
-            'type' => 'required|max:191',
-            'kondisi' => 'required|max:191',
-            'tahun_produksi' => 'required|date',
-            'tanggal_perolehan' => 'required|date',
-            'gambar' => 'required|max:191',
-            'matra' => 'required|max:191',
-            
-        ]);
-
-        if($validator->fails()) {
-            return response()->json([
-                'status' => 422,
-                'errors' => $validator->messages()
-            ], 422);
-        }else{
-            $militaries = Militaries::find($id);
+        $military = Militaries::findOrFail($id);
+    
+        $imageData = $request->gambar;
+    
+        if($imageData) {
+            $exploded = explode(',', $imageData);
+    
+            $extension = explode('/', mime_content_type($imageData))[1];
+    
+            $imageName = Str::random(32) . '.' . $extension;
+    
+            Storage::disk('public')->put($imageName, base64_decode($exploded[1]));
+    
+            if ($military->gambar) {
+                Storage::disk('public')->delete($military->gambar);
+            }
+    
+            $military->gambar = $imageName;
         }
-
-        if($militaries) {
-            $militaries->update([
-                'nama' => $request->nama,
-                'jenis' => $request->jenis,
-                'type' => $request->type,
-                'kondisi' => $request->kondisi,
-                'tahun_produksi' => $request->tahun_produksi,
-                'tanggal_perolehan' => $request->tanggal_perolehan,
-                'matra' => $request->matra,
-                'gambar' => $request->gambar,
-            ]);
-            return response()->json([
-                'status' => 200,
-                'message' => "Data Berhasil Diupdate"
-            ], 200);
-        }else{
-            return response()->json([
-                'status' => 404,
-                'message' => "Tidak Ada Data Yang Ketemu!"
-            ], 404);
-        }
+    
+        $military->nama = $request->nama;
+        $military->jenis = $request->jenis;
+        $military->type = $request->type;
+        $military->kondisi = $request->kondisi;
+        $military->tahun_produksi = $request->tahun_produksi;
+        $military->tanggal_perolehan = $request->tanggal_perolehan;
+        $military->matra = $request->matra;
+    
+        $military->save();
+    
+        return response()->json([
+            'status' => 200,
+            'message' => "Data Berhasil Diperbarui"
+        ], 200);
     }
 
     public function delete($id) {
