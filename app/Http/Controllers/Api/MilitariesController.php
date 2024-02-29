@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
 
 class MilitariesController extends Controller
 {
@@ -37,7 +38,6 @@ class MilitariesController extends Controller
             'matra' => 'required|max:191',
             'gambar' => 'required|file|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-
 
         if($validator->fails()) {
             return response()->json([
@@ -138,5 +138,20 @@ class MilitariesController extends Controller
                 'message' => "Tidak Ada Data Yang Ketemu!"
             ], 404);
         }
+    }
+
+    public function getImage($imageName) {
+        $path = storage_path('app/public/' . $imageName);
+        
+        if (!File::exists($path)) {
+            abort(404);
+        }
+
+        $file = File::get($path);
+        $type = File::mimeType($path);
+
+        $response = response($file, 200)->header('Content-Type', $type);
+
+        return $response;
     }
 }

@@ -13,3 +13,4 @@ Route::post('militaries', [MilitariesController::class, 'store']);
 Route::get('militaries/{id}', [MilitariesController::class, 'show']);
 Route::put('militaries/{id}/update', [MilitariesController::class, 'update']);
 Route::delete('militaries/{id}/delete', [MilitariesController::class, 'delete']);
+Route::get('militaries/image/{imageName}', [MilitariesController::class, 'getImage']);
